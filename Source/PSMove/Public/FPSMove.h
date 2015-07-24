@@ -34,21 +34,33 @@ public:
     {
         return FModuleManager::Get().IsModuleLoaded( "PSMove" );
     }
-    
+
+	/**
+	* A pointer to the data shared amongst all controllers (i.e. calibration state).
+	*/
+	FPSMoveRawSharedData_Concurrent* ModuleRawSharedDataPtr;
+
     /**
      * A pointer to an array of raw data frames, one for each connected controller.
      */
-    TArray<FPSMoveRawDataFrame>* ModuleRawDataArrayPtr;
+    TArray<FPSMoveRawControllerData_Concurrent>* ModuleRawControllerDataArrayPtr;
     
     /**
      * Here we declare functions that will be accessed via the module instance from within the game.
      */
     virtual void InitWorker();
-    
+
+	/**
+	* A component passes in a (typically null) pointer to a raw shared data object.
+	* This updates the pointer so it points to the same place as the module's raw shared data pointer
+	* i.e., it now points to the Worker's raw shared data.
+	*/
+	virtual void  GetRawSharedDataPtr(FPSMoveRawSharedData_Concurrent* &RawSharedDataPtrOut);
+
     /**
-     * A component passes in a (typically null) pointer to a raw data frame.
+     * A component passes in a (typically null) pointer to a raw controller data object.
      * This updates the pointer so it points to the same place as the module's raw data frame pointer for this ID
      * i.e., it now points to the Worker's raw data frame.
      */
-    virtual void  GetRawDataFramePtr(uint8 PSMoveID, FPSMoveRawDataFrame* &RawDataFramePtrOut);
+    virtual void  GetRawControllerDataPtr(uint8 PSMoveID, FPSMoveRawControllerData_Concurrent* &RawControllerDataPtrOut);
 };

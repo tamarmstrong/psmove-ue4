@@ -2,7 +2,9 @@
 
 #include <assert.h>
 #include "FPSMove.h"
+#include "FPSMoveMatrix.h"
 #include "FPSMoveWorker.h"
+#include "FPSMoveCalibration.h"
 
 IMPLEMENT_MODULE( FPSMove, PSMove )
 
@@ -10,7 +12,16 @@ void FPSMove::StartupModule()
 {
     // This code will execute after your module is loaded into memory (but after global variables are initialized, of course.)
     UE_LOG(LogPSMove, Log, TEXT("Loading PSMove module..."));
-    ModuleRawDataArrayPtr = nullptr;
+	ModuleRawSharedDataPtr = nullptr;
+    ModuleRawControllerDataArrayPtr = nullptr;
+
+	UE_LOG(LogPSMove, Log, TEXT("Running Module Unit Tests..."));
+	TestMatrixFunctions();
+	AffineTransformBuilder::Test();
+	AverageQuaternionBuilder::Test();
+	PointCloudCovarianceMatrixBuilder::Test();
+	//FPSMove1DKalmanFilter::Test();
+	//FPSMovePositionKalmanFilter::Test();
 }
 
 void FPSMove::ShutdownModule()
@@ -28,17 +39,27 @@ void FPSMove::InitWorker()
     // Init the PSMoveWorker singleton if needed.
     // This will also init the controllers and tracker if needed.
     UE_LOG(LogPSMove, Log, TEXT("Trying to initializing PSMoveWorker..."));
-    FPSMoveWorker::PSMoveWorkerInit(ModuleRawDataArrayPtr);
+	FPSMoveWorker::PSMoveWorkerInit(ModuleRawSharedDataPtr, ModuleRawControllerDataArrayPtr);
 }
 
-
-void  FPSMove::GetRawDataFramePtr(uint8 PSMoveID, FPSMoveRawDataFrame* &RawDataFramePtrOut)
+void FPSMove::GetRawSharedDataPtr(
+	FPSMoveRawSharedData_Concurrent* &RawSharedDataPtrOut)
 {
-    if (ModuleRawDataArrayPtr && ModuleRawDataArrayPtr->IsValidIndex(PSMoveID))
+	if (ModuleRawSharedDataPtr)
+	{
+		RawSharedDataPtrOut = ModuleRawSharedDataPtr;
+	}
+}
+
+void FPSMove::GetRawControllerDataPtr(
+	uint8 PSMoveID, 
+	FPSMoveRawControllerData_Concurrent* &RawDataFramePtrOut)
+{
+    if (ModuleRawControllerDataArrayPtr && ModuleRawControllerDataArrayPtr->IsValidIndex(PSMoveID))
     {
         // De-reference the ptr to get the raw data frame array
         // Then index it to get a specific raw data frame
         // Then set the passed in pointer to its address.
-        RawDataFramePtrOut = &((*ModuleRawDataArrayPtr)[PSMoveID]);
+        RawDataFramePtrOut = &((*ModuleRawControllerDataArrayPtr)[PSMoveID]);
     }
 }

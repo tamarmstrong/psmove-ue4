@@ -6,6 +6,8 @@
 #include "Engine.h"
 #include "CoreUObject.h"
 
+#define USING_STATIC_LIBRARY
+
 #include "../../ThirdParty/psmoveapi/include/psmove.h"
 #include "../../ThirdParty/psmoveapi/include/psmove_tracker.h"
 #include "../../ThirdParty/psmoveapi/include/psmove_fusion.h"
