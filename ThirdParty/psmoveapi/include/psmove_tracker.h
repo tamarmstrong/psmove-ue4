@@ -31,7 +31,6 @@
 #define PSMOVE_TRACKER_H
 
 #include "psmove.h"
-#include "psmove_config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -202,18 +201,6 @@ ADDCALL psmove_tracker_set_exposure(PSMoveTracker *tracker, enum PSMoveTracker_E
  **/
 ADDAPI enum PSMoveTracker_Exposure
 ADDCALL psmove_tracker_get_exposure(PSMoveTracker *tracker);
-
-/**
-* \brief Set whether or not the tracker should do smoothing.
-*
-* This function enables (1) or disables (0) smoothing for xy and z dimensions.
-*
-* \param tracker A valid \ref PSMoveTracker handle
-* \param adaptive_xy int 0 or 1
-* \param adaptive_z int 0 or 1
-**/
-ADDAPI void
-ADDCALL psmove_tracker_set_smoothing(PSMoveTracker *tracker, int adaptive_xy, int adaptive_z);
 
 /**
  * \brief Enable or disable camera image deinterlacing (line doubling)
@@ -429,24 +416,6 @@ ADDAPI int
 ADDCALL psmove_tracker_update(PSMoveTracker *tracker, PSMove *move);
 
 /**
- * \brief Process incoming data and update tracking information
- *
- * This function tracks one or all motion controllers in the camera
- * image, and updates tracking information such as 3D position
- * and camera color.
- *
- * This function must be called after psmove_tracker_update_image().
- *
- * \param tracker A valid \ref PSMoveTracker handle
- * \param move A valid \ref PSMove handle (to update a single controller)
- *             or \c NULL to update all enabled controllers at once
- *
- * \return Nonzero if tracking was successful, zero otherwise
- **/
-ADDAPI int
-ADDCALL psmove_tracker_update_cbb(PSMoveTracker *tracker, PSMove *move);
-
-/**
  * \brief Draw debugging information onto the current camera image
  *
  * This function has to be called after psmove_tracker_update(), and
@@ -517,35 +486,6 @@ ADDCALL psmove_tracker_get_image(PSMoveTracker *tracker);
 ADDAPI int
 ADDCALL psmove_tracker_get_position(PSMoveTracker *tracker,
         PSMove *move, float *x, float *y, float *radius);
-
-/**
-* \brief Get the current 3D location of a tracked controller
-*
-* This function obtains the location of a controller in the
-* world in cm.
-*
-* \param tracker A valid \ref PSMoveTracker handle
-* \param move A valid \ref PSMove handle
-* \param xcm A pointer to store the X part of the location, or \c NULL
-* \param ycm A pointer to store the Y part of the location, or \c NULL
-* \param zcm A pointer to store the Z part of the location, or \c NULL
-*
-* \return The age of the sensor reading in milliseconds, or -1 on error
-**/
-ADDAPI int
-ADDCALL psmove_tracker_get_location(PSMoveTracker *tracker,
-PSMove *move, float *xcm, float *ycm, float *zcm);
-
-
-/**
-* \brief Rest the location offsets to the current location
-*
-* \param tracker A valid \ref PSMoveTracker handle
-* \param move A valid \ref PSMove handle
-*
-**/
-ADDAPI void
-ADDCALL psmove_tracker_reset_location(PSMoveTracker *tracker, PSMove *move);
 
 /**
  * \brief Get the camera image size for the tracker
